@@ -72,7 +72,7 @@ public class MoneyCents {
 		
 		transactionsContent = new String[transactions.size()];
 		
-		mainwindow = new MainWindow();
+		mainwindow = MainWindow.getInstance();
 		mainwindow.setVisible(true);
 
 		reader.close();

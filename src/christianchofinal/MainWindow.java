@@ -26,36 +26,49 @@ import javax.swing.SwingConstants;
 
 public class MainWindow extends JFrame {
 
+	// Singleton Application
+	private static MainWindow instance;
+
 	private static final long serialVersionUID = 1L;
 	private JList transactionList;
 	private JPanel transactionPanel;
-	
-	public MainWindow () {
-		
+
+	private MainWindow () {
+
 		super ("Money Cents");
-		
+
 		setLayout(new FlowLayout());
 		setSize(480,852);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
 		refresh();
-		
+
 	}
-	
+
+	// Singleton Application
+	public static MainWindow getInstance(){
+
+		if (instance == null) {
+			instance = new MainWindow();
+		}
+		return instance;
+
+	}
+
 	public void refresh(){
-		
+
 		getContentPane().removeAll();
 
 		// Panel containing transaction history and options
 		/****************************
 		 * CREATE JCOMPONENTS BELOW
 		 ***************************/
-		
+
 		transactionPanel = new JPanel(new GridBagLayout());
 		transactionPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		transactionPanel.setSize(470,852);
-		
+
 		JLabel title = new JLabel("<html><h1>MONEY ¢ENTS</h1></html>");
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		JLabel expectedlabel = new JLabel("<html><h3>Expected amount: </h3></html>");
@@ -68,7 +81,7 @@ public class MainWindow extends JFrame {
 		expectedtext.setPreferredSize(new Dimension(220,25));
 		expectedtext.setEditable(false);
 		expectedtext.setFont(new Font("SansSerif",Font.PLAIN,18));
-		
+
 		JLabel postedlabel = new JLabel("<html><h3>Posted amount: </h3></html>");
 		postedlabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		String POSTED = String.valueOf(MoneyCents.postedAmount);
@@ -79,10 +92,10 @@ public class MainWindow extends JFrame {
 		postedtext.setPreferredSize(new Dimension(220,25));
 		postedtext.setEditable(false);
 		postedtext.setFont(new Font("SansSerif",Font.PLAIN,18));
-		
+
 		JLabel editT = new JLabel("Double-click a transaction to edit it.");
 		editT.setHorizontalAlignment(SwingConstants.CENTER);
-		
+
 		JButton addTransaction = new JButton("Add transaction");
 		addTransaction.setPreferredSize(new Dimension(460,40));
 		JButton deleteTransaction = new JButton("Delete transaction");
@@ -91,19 +104,19 @@ public class MainWindow extends JFrame {
 		saveButton.setPreferredSize(new Dimension(220,40));
 		JButton exitButton = new JButton("Exit");
 		exitButton.setPreferredSize(new Dimension(220,40));
-		
+
 		for (int i = 0; i < MoneyCents.transactions.size(); i++) {
 			MoneyCents.transactionsContent[i] = MoneyCents.transactions.get(i).displayFormat();
 		}
-		
+
 		transactionList = new JList(MoneyCents.transactionsContent);
 		transactionList.setVisibleRowCount(10);
 		transactionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		/*********************************
 		 * CREATE ACTION LISTENERS BELOW
 		 ********************************/
-		
+
 		transactionList.addMouseListener(new JListHandler());
 
 		addTransaction.addActionListener(new ActionListener(){
@@ -112,7 +125,7 @@ public class MainWindow extends JFrame {
 				tWindow.setVisible(true);
 			}
 		});
-		
+
 		deleteTransaction.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				if(transactionList.isSelectionEmpty()) return;
@@ -121,14 +134,14 @@ public class MainWindow extends JFrame {
 				dWindow.setVisible(true);
 			}
 		});
-			
+
 		saveButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				// Write ArrayList to file
-			System.out.println("Writing all data to file...");
+				System.out.println("Writing all data to file...");
 				try {
 					MoneyCents.writer = new BufferedWriter(new FileWriter("default.csv\\"));
-				MoneyCents.writer.write("Date,Amount,Description,Posted\n");
+					MoneyCents.writer.write("Date,Amount,Description,Posted\n");
 					for (int j = 0; j < MoneyCents.transactions.size(); j++) {
 						MoneyCents.transactions.get(j).writeToFile();
 					}
@@ -141,21 +154,21 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-		
+
 		exitButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				dispose();
 			}
 		});
-		
+
 		/***********************
 		 * CREATE LAYOUT BELOW
 		 ***********************/
-			
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(5,5,5,5);
 		c.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		c.gridx = 0;
 		c.gridy = 0;
 		c.gridwidth = 2;
@@ -173,7 +186,7 @@ public class MainWindow extends JFrame {
 		c.gridx = 1;
 		c.gridy = 2;
 		transactionPanel.add(postedtext,c);
-		
+
 		c.gridx = 0;
 		c.gridy = 3;
 		c.gridwidth = 2;
@@ -197,7 +210,7 @@ public class MainWindow extends JFrame {
 		c.gridy = 7;
 		c.gridwidth = 1;
 		transactionPanel.add(exitButton,c);
-		
+
 		add(transactionPanel);
 		revalidate();
 		repaint();
