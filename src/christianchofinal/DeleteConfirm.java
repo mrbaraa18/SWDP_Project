@@ -26,7 +26,12 @@ public class DeleteConfirm extends JFrame {
 		
 		super("Confirm Delete");
 		
-		final Transaction tempTransaction = new Transaction();
+final Transaction tempTransaction = new Transaction.TransactionBuilder()
+		.setDate(t.getdate())
+		.setAmount(t.getamount())
+		.setDescription(t.getdescription())
+		.setPosted(t.getposted())
+		.build();
 		tempTransaction.copyFrom(t);
 		
 		setLayout(new FlowLayout());
