@@ -10,19 +10,13 @@ public class Transaction {
 	private String deposit; // true if a deposit. false if a withdrawal.
 	private boolean posted; // A posted transaction is one that has been fully processed by a bank.
 	
-	// Setters
-	public void setdate (String s) { date = s; }
-	public void setamount (double d) { amount = d; }
-	public void setdescription (String s) { description = s; }
-	public void setdeposit () {
-		if (amount < 0) 
-			deposit = "W";
-		else if (amount > 0)
-			deposit = "D";
-		else
-			deposit = "N";
+	private Transaction(TransactionBuilder builder) {
+		this.date = builder.date;
+		this.amount = builder.amount;
+		this.description = builder.description;
+		this.deposit = builder.deposit;
+		this.posted = builder.posted;
 	}
-	public void setposted (boolean b) { posted = b; }
 	
 	// Getters
 	public String getdate () { return date; }
@@ -31,25 +25,6 @@ public class Transaction {
 	public String getdeposit () { return deposit; }
 	public boolean getposted () { return posted; }
 
-	// Default constructor
-	public Transaction () {
-		date = "00000000";
-		amount = 0.0;
-		description = "No description.";
-		setdeposit();
-		posted = true;
-	}
-	
-	// Constructor based on an entire String from a line in CSV file
-	public Transaction (String s) {
-		String[] data = s.split(",");
-		date = data[0];
-		amount = Double.parseDouble(data[1]);
-		description = data[2];
-		setdeposit();
-		posted = Boolean.parseBoolean(data[3]);
-	}
-	
 	public void print () {
 		System.out.print("\t" + date + "\t" + amount + "\t" + "Posted? ");
 		if (posted)
@@ -122,4 +97,53 @@ public class Transaction {
 		return content;
 	}
 	
+	public static class TransactionBuilder {
+		private String date;
+		private double amount;
+		private String description;
+		private String deposit;
+		private boolean posted;
+		
+		public TransactionBuilder() {
+			this.date = "00000000";
+			this.amount = 0.0;
+			this.description = "No description.";
+			this.deposit = "N";
+			this.posted = true;
+		}
+		
+		public TransactionBuilder(String s) {
+			String[] data = s.split(",");
+			this.date = data[0];
+			this.amount = Double.parseDouble(data[1]);
+			this.description = data[2];
+			this.deposit = (amount < 0) ? "W" : (amount > 0) ? "D" : "N";
+			this.posted = Boolean.parseBoolean(data[3]);
+		}
+		
+		public TransactionBuilder setDate(String date) {
+			this.date = date;
+			return this;
+		}
+		
+		public TransactionBuilder setAmount(double amount) {
+			this.amount = amount;
+			this.deposit = (amount < 0) ? "W" : (amount > 0) ? "D" : "N";
+			return this;
+		}
+		
+		public TransactionBuilder setDescription(String description) {
+			this.description = description;
+			return this;
+		}
+		
+		public TransactionBuilder setPosted(boolean posted) {
+			this.posted = posted;
+			return this;
+		}
+		
+		public Transaction build() {
+			return new Transaction(this);
+		}
+	}
 }
