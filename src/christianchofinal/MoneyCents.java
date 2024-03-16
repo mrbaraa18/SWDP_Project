@@ -22,7 +22,7 @@ public class MoneyCents {
 	public static int place = 0; // Used to pass along through multiple classes to edit/add/delete transactions
 	
 	public static MainWindow mainwindow;
-	public static Transaction tempTransaction = new Transaction();
+	public static Transaction tempTransaction;
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 				
@@ -42,8 +42,8 @@ public class MoneyCents {
 				int i = 0;
 				while ((tempString = reader.readLine()) != null){
 
-					transactions.add(new Transaction(tempString));
-					
+Transaction.TransactionBuilder builder = new Transaction.TransactionBuilder(tempString);
+					transactions.add(builder.build());					
 					// As the ArrayList is being populated, the amounts are calculated
 					expectedAmount += transactions.get(i).getamount();
 					if (transactions.get(i).getposted()) {
