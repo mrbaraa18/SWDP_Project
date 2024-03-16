@@ -52,7 +52,7 @@ public class AddEditWindow extends JFrame {
 		
 		super ("Add/Edit Transaction");
 
-		final Transaction passedT = new Transaction();
+		final Transaction passedT = new Transaction.TransactionBuilder().build();
 		if (t != null)
 			passedT.copyFrom(t);
 		final boolean newTransaction;
@@ -236,7 +236,7 @@ public class AddEditWindow extends JFrame {
 					else
 						s += "FALSE";
 				
-					Transaction tempTransaction = new Transaction(s);
+						Transaction tempTransaction = new Transaction.TransactionBuilder(s).build();
 				
 					// Delete the original if it's being edited
 					if (!newTransaction){
