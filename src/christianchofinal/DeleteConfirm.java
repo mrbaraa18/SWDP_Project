@@ -26,12 +26,12 @@ public class DeleteConfirm extends JFrame {
 		
 		super("Confirm Delete");
 		
-final Transaction tempTransaction = new Transaction.TransactionBuilder()
-		.setDate(t.getdate())
-		.setAmount(t.getamount())
-		.setDescription(t.getdescription())
-		.setPosted(t.getposted())
-		.build();
+		final Transaction tempTransaction = new Transaction.TransactionBuilder()
+				.setDate(t.getdate())
+				.setAmount(t.getamount())
+				.setDescription(t.getdescription())
+				.setPosted(t.getposted())
+				.build();
 		tempTransaction.copyFrom(t);
 		
 		setLayout(new FlowLayout());
@@ -44,7 +44,7 @@ final Transaction tempTransaction = new Transaction.TransactionBuilder()
 		panel.setSize(480,100);
 		
 		dialog = new JLabel("<html>Confirm deletion of " + "\"" + MoneyCents.transactions.get(MoneyCents.place).getdescription() + "\"?");
-		okay = new JButton("Confirm");
+		okay = new DeleteButtonDecorator(new JButton("Confirm"), tempTransaction);
 		cancel = new JButton("Cancel");
 		
 		okay.setPreferredSize(new Dimension(220,25));
@@ -66,24 +66,6 @@ final Transaction tempTransaction = new Transaction.TransactionBuilder()
 		c.gridwidth = 1;
 		panel.add(cancel,c);
 		
-		okay.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				System.out.println("Deleting item: ");
-				MoneyCents.transactions.get(MoneyCents.place).print();
-				MoneyCents.transactions.remove(MoneyCents.place);
-				System.out.println("Deleted");
-				MoneyCents.transactionsContent = new String[MoneyCents.transactions.size()];
-				for (int i = 0; i < MoneyCents.transactions.size(); i++) {
-					MoneyCents.transactionsContent[i] = MoneyCents.transactions.get(i).displayFormat();
-				}
-				if (tempTransaction.getposted())
-					MoneyCents.postedAmount -= tempTransaction.getamount();
-				MoneyCents.expectedAmount -= tempTransaction.getamount();
-				MoneyCents.mainwindow.refresh();
-				dispose();
-			}
-		});
-		
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -92,6 +74,35 @@ final Transaction tempTransaction = new Transaction.TransactionBuilder()
 		
 		add(panel);
 		
+	}
+	
+	private class DeleteButtonDecorator extends JButton {
+		
+		private Transaction transaction;
+		
+		public DeleteButtonDecorator(JButton button, Transaction transaction) {
+			super(button.getText());
+			this.transaction = transaction;
+			addActionListener(new DeleteButtonListener());
+		}
+		
+		private class DeleteButtonListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Deleting item: ");
+				MoneyCents.transactions.get(MoneyCents.place).print();
+				MoneyCents.transactions.remove(MoneyCents.place);
+				System.out.println("Deleted");
+				MoneyCents.transactionsContent = new String[MoneyCents.transactions.size()];
+				for (int i = 0; i < MoneyCents.transactions.size(); i++) {
+					MoneyCents.transactionsContent[i] = MoneyCents.transactions.get(i).displayFormat();
+				}
+				if (transaction.getposted())
+					MoneyCents.postedAmount -= transaction.getamount();
+				MoneyCents.expectedAmount -= transaction.getamount();
+				MoneyCents.mainwindow.refresh();
+				dispose();
+			}
+		}
 	}
 	
 }
